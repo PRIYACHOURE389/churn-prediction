@@ -1,0 +1,26 @@
+# Core Python
+numpy
+pandas
+
+# Visualization
+matplotlib
+seaborn
+
+# Machine Learning
+scikit-learn
+xgboost
+imbalanced-learn
+
+# Model Persistence
+joblib
+
+# Explainability
+shap
+
+# Jupyter Environment
+jupyter
+notebook
+
+# Utilities
+tqdm
+

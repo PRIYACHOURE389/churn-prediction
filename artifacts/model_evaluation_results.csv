@@ -1,0 +1,7 @@
+model,roc_auc,precision,recall,f1,true_negative,false_positive,false_negative,true_positive,threshold
+Random Forest,0.8394,0.5155,0.8021,0.6276,751,282,74,300,0.5
+Logistic Regression,0.8334,0.5,0.8102,0.6184,730,303,71,303,0.5
+Decision Tree,0.8285,0.5051,0.7995,0.619,740,293,75,299,0.5
+LightGBM,0.8248,0.5359,0.7193,0.6142,800,233,105,269,0.5
+CatBoost,0.8241,0.5216,0.7433,0.613,778,255,96,278,0.5
+XGBoost,0.8188,0.5231,0.6952,0.597,796,237,114,260,0.5
