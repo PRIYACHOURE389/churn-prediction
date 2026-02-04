@@ -62,13 +62,22 @@ Each row represents a customer; columns represent demographics, services, and bi
 
 ```text
 customer-churn-prediction/
-├── artifacts/
+│── artifacts/
+│   ├──model_evaluation_results.json
+│   ├──model_evaluation_results.csv
+│   ├── evaluation_metrics.json
+│   ├── classification_report.csv
+│   ├── confusion_matrix.csv
+│   ├── decile_lift.csv
+│   └── roc_auc.txt
+│   
 ├── data/
 │   ├── raw/
 │   │   └── churn_raw.csv
 │   └── processed/
 │       ├── churn_clean.csv
-│       └── featured_telco.csv
+│       ├── featured_telco.csv
+│       └──  retention_targets.csv
 │
 ├── models/
 │   ├── catboost.joblib
@@ -76,8 +85,11 @@ customer-churn-prediction/
 │   ├── feature_columns.joblib
 │   ├── lightgbm.joblib
 │   ├── logistic_regression.joblib
-│   └── random_forest.joblib
-│   └── xgboost.joblib
+│   ├── random_forest.joblib
+│   ├── xgboost.joblib
+│   ├── training_metrics.json
+│   ├── churn_model.joblib
+│   └── churn_pipeline.joblib
 │
 ├── notebooks/
 |   └── catboost_info/
@@ -102,7 +114,9 @@ customer-churn-prediction/
 │
 ├── requirements.txt
 ├── main.py
-└── README.md
+├── README.md
+└── ARCHITECTURE.md
+
 ```
 
 ---

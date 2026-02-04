@@ -32,7 +32,8 @@ It covers:
 
 ## Project Structure
 
-```
+---
+
 customer-churn-prediction/
 ├── ARCHITECTURE.md        # System design & future roadmap
 ├── README.md
@@ -45,8 +46,8 @@ customer-churn-prediction/
 ├── models/                # Trained model artifacts
 ├── reports/               # Evaluation reports & analysis
 ├── requirements.txt
-└── main.py                # Project entry point
-```
+├── main.py                # Project entry point
+└── artifacts
 
 ---
 
