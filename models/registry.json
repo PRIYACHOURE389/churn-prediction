@@ -1,0 +1,6 @@
+{
+  "active_model": "v1",
+  "models": {
+    "v1": "models/churn_pipeline.joblib"
+  }
+}

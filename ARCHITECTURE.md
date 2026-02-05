@@ -43,6 +43,9 @@ customer-churn-prediction/
 │   ├── train.py                # Model training
 │   ├── evaluate.py             # Metrics & evaluation
 │   └── predict.py              # Centralized inference logic
+├── api/                        # FastAPI layer
+├── dashboard/                  # Streamlit UI
+├── uplift/                     # Uplift modeling
 ├── models/                # Trained model artifacts
 ├── reports/               # Evaluation reports & analysis
 ├── requirements.txt
