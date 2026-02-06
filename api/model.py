@@ -1,58 +1,32 @@
-"""
-Business-friendly churn scoring logic
-(temporary rule-based model, ML-ready)
-"""
+import pandas as pd
+import joblib
+from pathlib import Path
 
-MODEL_VERSION = "v1.0-business"
+MODEL_VERSION = "v1.0"
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+MODEL_PATH = BASE_DIR / "models" / "churn_pipeline.joblib"
+
+_pipeline = None
 
 
-def predict_churn(customer: dict) -> dict:
-    """
-    Predict churn risk in a way NON-TECHNICAL users can understand.
-    """
+def load_model():
+    global _pipeline
+    if _pipeline is None:
+        _pipeline = joblib.load(MODEL_PATH)
+    return _pipeline
 
-    score = 0.0
 
-    # --- Business rules (simple & explainable) ---
-    if customer.get("Contract") == "Month-to-month":
-        score += 0.30
+def predict_churn(data: dict):
+    model = load_model()
 
-    if customer.get("InternetService") == "Fiber optic":
-        score += 0.20
+    df = pd.DataFrame([data])
+    proba = model.predict_proba(df)[0][1]
 
-    if customer.get("PaymentMethod") == "Electronic check":
-        score += 0.20
+    label = "High Risk" if proba >= 0.5 else "Low Risk"
 
-    if customer.get("tenure", 0) < 12:
-        score += 0.20
-
-    if customer.get("SeniorCitizen", 0) == 1:
-        score += 0.10
-
-    # Clamp score
-    churn_probability = round(min(score, 0.95), 2)
-
-    # --- Human interpretation ---
-    if churn_probability >= 0.7:
-        risk = "High"
-        message = "Customer is very likely to leave"
-        action = "Offer discount or long-term contract immediately"
-
-    elif churn_probability >= 0.4:
-        risk = "Medium"
-        message = "Customer may leave in near future"
-        action = "Engage with loyalty offers or follow-up"
-
-    else:
-        risk = "Low"
-        message = "Customer likely to stay"
-        action = "No immediate action required"
-
-    # --- FINAL RESPONSE ---
     return {
-        "churn_probability": churn_probability,
-        "risk_level": risk,
-        "explanation": message,
-        "recommended_action": action,
+        "churn_probability": round(float(proba), 3),
+        "churn_prediction": label,
         "model_version": MODEL_VERSION,
     }

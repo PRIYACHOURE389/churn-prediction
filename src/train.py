@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, classification_report
 
 # -------------------------------------------------------------------
-# Silence known, safe warnings (production hygiene)
+# Silence safe encoder warnings (production hygiene)
 # -------------------------------------------------------------------
 warnings.filterwarnings(
     "ignore",
@@ -28,8 +28,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DATA_PATH = PROJECT_ROOT / "data" / "processed" / "churn_clean.csv"
 MODEL_DIR = PROJECT_ROOT / "models"
+
 PIPELINE_PATH = MODEL_DIR / "churn_pipeline.joblib"
 METRICS_PATH = MODEL_DIR / "training_metrics.json"
+SCHEMA_PATH = MODEL_DIR / "raw_feature_schema.joblib"
 
 TARGET_COL = "Churn"
 TEST_SIZE = 0.2
@@ -59,16 +61,18 @@ def identify_feature_types(X: pd.DataFrame):
 
 
 # -------------------------------------------------------------------
-# Main training routine
+# Training
 # -------------------------------------------------------------------
 def main():
-    logging.info("Starting supervised model training")
+    logging.info("Starting model training")
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Load data
     df = pd.read_csv(DATA_PATH)
     X, y = split_features_target(df)
+
+    # Persist raw feature schema (CRITICAL for inference validation)
+    joblib.dump(X.columns.tolist(), SCHEMA_PATH)
 
     categorical_cols, numerical_cols = identify_feature_types(X)
 
@@ -76,9 +80,6 @@ def main():
     logging.info(f"Categorical features: {len(categorical_cols)}")
     logging.info(f"Numerical features: {len(numerical_cols)}")
 
-    # -------------------------------------------------------------------
-    # Preprocessing
-    # -------------------------------------------------------------------
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -100,20 +101,13 @@ def main():
         remainder="drop"
     )
 
-    # -------------------------------------------------------------------
-    # Model (future-proof configuration)
-    # -------------------------------------------------------------------
     model = LogisticRegression(
         solver="liblinear",
-        l1_ratio=0.0,              # equivalent to L2, no deprecation
         max_iter=1000,
         class_weight="balanced",
         random_state=RANDOM_STATE
     )
 
-    # -------------------------------------------------------------------
-    # Full pipeline
-    # -------------------------------------------------------------------
     pipeline = Pipeline(
         steps=[
             ("preprocessing", preprocessor),
@@ -121,9 +115,6 @@ def main():
         ]
     )
 
-    # -------------------------------------------------------------------
-    # Train / evaluate
-    # -------------------------------------------------------------------
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -140,11 +131,8 @@ def main():
     auc = roc_auc_score(y_test, y_prob)
     report = classification_report(y_test, y_pred, output_dict=True)
 
-    logging.info(f"ROC-AUC: {auc:.4f}")
+    logging.info(f"Holdout ROC-AUC: {auc:.4f}")
 
-    # -------------------------------------------------------------------
-    # Persist artifacts
-    # -------------------------------------------------------------------
     joblib.dump(pipeline, PIPELINE_PATH)
 
     with open(METRICS_PATH, "w") as f:
@@ -160,9 +148,7 @@ def main():
             indent=4
         )
 
-    logging.info(f"Pipeline saved to: {PIPELINE_PATH}")
-    logging.info(f"Metrics saved to: {METRICS_PATH}")
-    logging.info("Model training completed successfully")
+    logging.info("Model, schema, and metrics saved successfully")
 
 
 if __name__ == "__main__":
