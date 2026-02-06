@@ -28,6 +28,9 @@
         }
     },
     "n_samples": 7032,
-    "n_raw_features": 20,
+    "n_raw_features": 19,
+    "excluded_columns": [
+        "customerID"
+    ],
     "random_state": 42
 }

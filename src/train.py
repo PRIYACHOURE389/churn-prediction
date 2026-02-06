@@ -34,6 +34,7 @@ METRICS_PATH = MODEL_DIR / "training_metrics.json"
 SCHEMA_PATH = MODEL_DIR / "raw_feature_schema.joblib"
 
 TARGET_COL = "Churn"
+ID_COLS = ["customerID"]          # 🔒 identifiers explicitly excluded
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 
@@ -49,14 +50,25 @@ logging.basicConfig(
 # Utilities
 # -------------------------------------------------------------------
 def split_features_target(df: pd.DataFrame):
-    X = df.drop(columns=[TARGET_COL])
+    """
+    Split dataframe into features and target.
+    Identifiers are explicitly removed to guarantee
+    a clean inference schema.
+    """
+    X = df.drop(columns=[TARGET_COL] + ID_COLS, errors="ignore")
     y = df[TARGET_COL]
     return X, y
 
 
 def identify_feature_types(X: pd.DataFrame):
-    categorical_cols = X.select_dtypes(include=["object", "string"]).columns.tolist()
-    numerical_cols = X.select_dtypes(exclude=["object"]).columns.tolist()
+    categorical_cols = X.select_dtypes(
+        include=["object", "string"]
+    ).columns.tolist()
+
+    numerical_cols = X.select_dtypes(
+        exclude=["object", "string"]
+    ).columns.tolist()
+
     return categorical_cols, numerical_cols
 
 
@@ -69,9 +81,12 @@ def main():
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(DATA_PATH)
+
     X, y = split_features_target(df)
 
-    # Persist raw feature schema (CRITICAL for inference validation)
+    # -------------------------------------------------------------------
+    # Persist raw feature schema (INFERENCE CONTRACT)
+    # -------------------------------------------------------------------
     joblib.dump(X.columns.tolist(), SCHEMA_PATH)
 
     categorical_cols, numerical_cols = identify_feature_types(X)
@@ -80,6 +95,9 @@ def main():
     logging.info(f"Categorical features: {len(categorical_cols)}")
     logging.info(f"Numerical features: {len(numerical_cols)}")
 
+    # -------------------------------------------------------------------
+    # Preprocessing
+    # -------------------------------------------------------------------
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -101,6 +119,9 @@ def main():
         remainder="drop"
     )
 
+    # -------------------------------------------------------------------
+    # Model
+    # -------------------------------------------------------------------
     model = LogisticRegression(
         solver="liblinear",
         max_iter=1000,
@@ -115,6 +136,9 @@ def main():
         ]
     )
 
+    # -------------------------------------------------------------------
+    # Train / validation split
+    # -------------------------------------------------------------------
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -125,6 +149,9 @@ def main():
 
     pipeline.fit(X_train, y_train)
 
+    # -------------------------------------------------------------------
+    # Evaluation
+    # -------------------------------------------------------------------
     y_prob = pipeline.predict_proba(X_test)[:, 1]
     y_pred = pipeline.predict(X_test)
 
@@ -133,6 +160,9 @@ def main():
 
     logging.info(f"Holdout ROC-AUC: {auc:.4f}")
 
+    # -------------------------------------------------------------------
+    # Persist artifacts
+    # -------------------------------------------------------------------
     joblib.dump(pipeline, PIPELINE_PATH)
 
     with open(METRICS_PATH, "w") as f:
@@ -142,6 +172,7 @@ def main():
                 "classification_report": report,
                 "n_samples": int(X.shape[0]),
                 "n_raw_features": int(X.shape[1]),
+                "excluded_columns": ID_COLS,
                 "random_state": RANDOM_STATE
             },
             f,
