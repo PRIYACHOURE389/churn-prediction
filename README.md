@@ -1,122 +1,106 @@
 # 📊 Telco Customer Churn Prediction
 
-An **end-to-end machine learning project** that predicts customer churn and uncovers **key business drivers** behind churn to support **data-driven retention strategies**.
+## End-to-End Machine Learning System for Retention Intelligence**
 
-Built using the **IBM Telco Customer Churn dataset**, this project mirrors **real-world churn analytics workflows** used in telecom and subscription-based businesses.
+An end-to-end **customer churn prediction and analytics system** designed to identify **at-risk customers**, uncover **root churn drivers**, and enable **proactive retention strategies**.
+
+Built on the **IBM Telco Customer Churn dataset**, this project reflects **real-world telecom churn workflows**, from data ingestion and modeling to explainability and deployment readiness.
 
 ---
 
-## 🚀 Business Problem
+## 🚀 Business Context
 
-Customer churn directly impacts revenue. Retaining an existing customer is **significantly cheaper** than acquiring a new one.
+Customer churn has a **direct and measurable impact on revenue**.
+In subscription businesses, **retaining an existing customer is far cheaper than acquiring a new one**.
 
-### **Primary Question**
+### 🎯 Core Business Question
 
-> Which customers are most likely to churn — and why?
+> **Which customers are most likely to churn — and what actions can prevent it?**
 
-### **Business Objectives**
+### 🎯 Business Objectives
 
 * Predict churn with **high recall** to minimize missed at-risk customers
 * Identify **behavioral, service, and contract-based churn drivers**
-* Enable **proactive retention campaigns**
+* Support **targeted, data-driven retention campaigns**
 
 ---
 
 ## 🧾 Dataset Overview
 
-Each row represents a customer; columns represent demographics, services, and billing information.
+Each record represents one customer, with demographic, service usage, contract, and billing information.
 
-### Feature Groups
+### 👥 Demographics
 
-## 🔧 Services**
+* `gender`
+* `SeniorCitizen`
+* `Partner`
+* `Dependents`
 
-* PhoneService, MultipleLines
-* InternetService
-* OnlineSecurity, OnlineBackup
-* DeviceProtection, TechSupport
-* StreamingTV, StreamingMovies
+### 🔧 Services
 
-## 💳 Account Information**
+* `PhoneService`, `MultipleLines`
+* `InternetService`
+* `OnlineSecurity`, `OnlineBackup`
+* `DeviceProtection`, `TechSupport`
+* `StreamingTV`, `StreamingMovies`
 
-* tenure
-* Contract
-* PaymentMethod
-* PaperlessBilling
-* MonthlyCharges
-* TotalCharges
+### 💳 Account & Billing
 
-## 👥 Demographics**
+* `tenure`
+* `Contract`
+* `PaymentMethod`
+* `PaperlessBilling`
+* `MonthlyCharges`
+* `TotalCharges`
 
-* gender
-* SeniorCitizen
-* Partner
-* Dependents
+### 🎯 Target
 
-## 🎯 Target**
-
-* `Churn` (Yes / No)
+* **`Churn`** (Yes / No)
 
 ---
 
-## 🗂️ Project Structure
+## 🗂️ Project Structure (Production-Ready)
 
 ```text
 customer-churn-prediction/
-│── artifacts/
-│   ├──model_evaluation_results.json
-│   ├──model_evaluation_results.csv
+│
+├── artifacts/                  # Model evaluation outputs
 │   ├── evaluation_metrics.json
 │   ├── classification_report.csv
 │   ├── confusion_matrix.csv
 │   ├── decile_lift.csv
 │   └── roc_auc.txt
-│   
+│
 ├── data/
-│   ├── raw/
-│   │   └── churn_raw.csv
-│   └── processed/
-│       ├── churn_clean.csv
-│       ├── featured_telco.csv
-│       └──  retention_targets.csv
+│   ├── raw/                    # Original dataset
+│   └── processed/              # Cleaned & engineered datasets
 │
-├── models/
-│   ├── catboost.joblib
-│   ├── decision_tree.joblib
-│   ├── feature_columns.joblib
-│   ├── lightgbm.joblib
-│   ├── logistic_regression.joblib
-│   ├── random_forest.joblib
-│   ├── xgboost.joblib
-│   ├── training_metrics.json
+├── models/                     # Trained models & pipelines
+│   ├── churn_pipeline.joblib
 │   ├── churn_model.joblib
-│   └── churn_pipeline.joblib
+│   ├── feature_columns.joblib
+│   └── training_metrics.json
 │
-├── notebooks/
-|   └── catboost_info/
-|       └──├── 01_data_understanding.ipynb
-│          ├── 02_eda.ipynb
-│          ├── 03_feature_engineering.ipynb
-│          └── 04_model_training.ipynb
-│   
-├── src/
-|   ├── _init_.py
+├── notebooks/                  # Exploratory & modeling notebooks
+│   ├── 01_data_understanding.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_feature_engineering.ipynb
+│   └── 04_model_training.ipynb
+│
+├── src/                        # Production scripts
 │   ├── data_preprocessing.py
 │   ├── feature_engineering.py
 │   ├── train.py
 │   ├── evaluate.py
 │   └── predict.py
 │
-├── reports/
-│   └── figures/
-│       ├── churn_distribution_pie.png
-│       ├── contract_churn_barh.png
-│       └── tenure_churn_violin.png
+├── reports/figures/             # EDA & insights visuals
+│
+├── api/                        # FastAPI inference service
 │
 ├── requirements.txt
-├── main.py
-├── README.md
-└── ARCHITECTURE.md
-
+├── ARCHITECTURE.md
+└── README.md
 ```
 
 ---
@@ -124,13 +108,20 @@ customer-churn-prediction/
 ## 🛠️ Tech Stack
 
 * **Language:** Python
-* **Data Analysis:** Pandas, NumPy
+* **Data:** Pandas, NumPy
 * **Visualization:** Matplotlib, Seaborn
-* **ML Models:** Scikit-learn, XGBoost, LightGBM, CatBoost
-* **Imbalance Handling:** Classimbalance weight
+* **Modeling:**
+
+  * Logistic Regression
+  * Decision Tree
+  * Random Forest
+  * XGBoost
+  * LightGBM
+  * CatBoost
+* **Imbalance Handling:** Class weighting / SMOTE
 * **Explainability:** SHAP
-* **Environment:** Jupyter Notebook
-* **Version Control:** Git & GitHub
+* **Deployment:** FastAPI
+* **Version Control:** Git, GitHub
 
 ---
 
@@ -138,96 +129,137 @@ customer-churn-prediction/
 
 ### 1️⃣ Data Cleaning
 
-* Data type correction (e.g., `TotalCharges`)
-* Missing value handling
-* Standardized categorical values
+* Corrected data types (e.g., `TotalCharges`)
+* Handled missing values
+* Standardized categorical labels
 
 ### 2️⃣ Exploratory Data Analysis
 
 * Overall churn distribution
-* Churn vs contract, tenure, monthly charges
-* Identification of high-risk segments
+* Churn vs tenure, contract type, charges
+* Identification of **high-risk customer segments**
 
 ### 3️⃣ Feature Engineering
 
-* Binary encoding for Yes/No features
-* One-hot encoding for categorical variables
-* Derived tenure and billing features
+* Binary encoding (Yes/No)
+* One-hot encoding for multi-class features
+* Derived tenure & billing features
 
-### 4️⃣ Modeling
+### 4️⃣ Modeling Strategy
 
-* Baselines: Logistic Regression, Decision Tree
-* Advanced: Random Forest, XGBoost, LightGBM, CatBoost
-* Class imbalance handled using **SMOTE**
+* **Baseline:** Logistic Regression, Decision Tree
+* **Advanced:** Random Forest, XGBoost, LightGBM, CatBoost
+* Class imbalance handled via **weighted loss / SMOTE**
 
-### 5️⃣ Evaluation
+### 5️⃣ Evaluation Metrics
 
 * ROC-AUC
-* Precision, Recall, F1-score
+* Precision, Recall, F1-Score
 * Confusion Matrix
 
-📌 **Business Priority:** Recall for churn class
+📌 **Primary business metric:** **Recall (Churn class)**
 
 ### 6️⃣ Explainability
 
 * SHAP global feature importance
-* Individual prediction interpretation
+* Individual customer-level explanations
 
 ---
 
-## 📈 Key Results & Insights
+## 📈 Key Insights
 
-## Top Churn Drivers**
+### 🔑 Top Churn Drivers
 
 * Month-to-month contracts
 * High monthly charges
 * Lack of TechSupport & OnlineSecurity
-* Low tenure
+* Low customer tenure
 
-**Insight:**
-Customers with **short tenure**, **high bills**, and **no support services** show the highest churn probability.
+### 💡 Insight
 
----
-
-## 💡 Business Recommendations
-
-* Incentivize contract upgrades for high-risk users
-* Bundle support services for churn-prone segments
-* Offer loyalty discounts to long-tenure customers
-* Trigger targeted retention campaigns using churn scores
+Customers with **short tenure**, **high bills**, and **no support services** exhibit the **highest churn probability**.
 
 ---
 
-## ▶️ How to Run
+## 💼 Business Recommendations
+
+* Incentivize **contract upgrades** for month-to-month users
+* Bundle **TechSupport & Security services**
+* Offer **loyalty discounts** for long-tenure customers
+* Trigger **targeted retention campaigns** using churn scores
+
+---
+
+## ▶️ How to Run (Step-by-Step)
+
+### 1️⃣ Clone the Repository
 
 ```bash
-git clone <repo-url>
+git clone <your-repo-url>
 cd customer-churn-prediction
+```
+
+### 2️⃣ Create Environment & Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-Run notebooks in sequence:
-
----
-01 → 02 → 03 → 04 → 05
-
 ---
 
-Or train via script:
+### 3️⃣ Run the Analysis (Recommended Order)
+
+```text
+01_data_understanding.ipynb
+02_eda.ipynb
+03_feature_engineering.ipynb
+04_model_training.ipynb
+```
+
+---
+
+### 4️⃣ Train Model via Script (Production)
 
 ```bash
 python src/train.py
+```
+
+Outputs:
+
+* Trained model → `models/`
+* Evaluation artifacts → `artifacts/`
+
+---
+
+### 5️⃣ Run Predictions
+
+```bash
+python src/predict.py
+```
+
+---
+
+### 6️⃣ Run API (Optional – Deployment Ready)
+
+```bash
+uvicorn api.main:app --reload
+```
+
+Open:
+
+```
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
 ## 🔮 Future Enhancements
 
-* Cost-sensitive churn modeling
-* CLV-based retention optimization
-* Uplift modeling
-* FastAPI inference service
-* Streamlit dashboard
+* Cost-sensitive churn optimization
+* Customer Lifetime Value (CLV) modeling
+* Uplift modeling for retention actions
+* Streamlit executive dashboard
+* Cloud deployment (Docker + AWS/GCP)
 
 ---
 
