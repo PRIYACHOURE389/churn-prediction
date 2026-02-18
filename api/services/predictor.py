@@ -1,30 +1,16 @@
-import pandas as pd
+import joblib
+from pathlib import Path
 
-from api.schemas import CustomerFeatures
-from api.model import model
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+MODEL_PATH = BASE_DIR / "models" / "churn_pipeline.joblib"
 
-MODEL_VERSION = "v1"
+model = joblib.load(MODEL_PATH)
 
-RECOMMENDATIONS = {
-    "High": "Immediate retention action recommended",
-    "Medium": "Targeted engagement advised",
-    "Low": "No immediate action required"
-}
 
-def predict_single(customer: CustomerFeatures) -> dict:
-    df = pd.DataFrame([customer.model_dump()])
-
-    prob = model.predict_proba(df)[0][1]
-
-    risk = (
-        "High" if prob > 0.7 else
-        "Medium" if prob > 0.4 else
-        "Low"
-    )
-
-    return {
-        "churn_probability": round(prob, 4),
-        "risk_segment": risk,
-        "recommendation": RECOMMENDATIONS[risk],
-        "model_version": MODEL_VERSION
-    }
+def assign_risk(prob):
+    if prob >= 0.75:
+        return "High Risk"
+    elif prob >= 0.4:
+        return "Medium Risk"
+    else:
+        return "Low Risk"
